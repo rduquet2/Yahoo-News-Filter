@@ -1,0 +1,14 @@
+{
+    "manifest_version": 3,
+    "name": "Yahoo News Filter",
+    "description": "This extension will filter news based on your preferences",
+    "version": "0.1",
+     "browser_action": {
+     },
+    "content_scripts": [
+      {
+        "matches": ["https://news.yahoo.com/*"],
+        "js": ["content.js"]
+      }
+    ]
+  }
