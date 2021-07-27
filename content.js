@@ -10,7 +10,7 @@
 // ==/UserScript==
 
 const categoriesToRemove = []; //enter categories that you would like to remove inside "" and with commas separating each category
-const sourcesToRemove = ["INSIDER"]; //enter sources here in the same format as categories
+const sourcesToRemove = []; //enter sources here in the same format as categories
 //sources we removed and their article titles
 let badSources = [];
 //categories we removed and their article titles
@@ -36,7 +36,7 @@ const modal =
 <div class="modal-dialog" role="document">
   <div class="modal-content">
     <div class="modal-header">
-      <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+      <h5 class="modal-title" id="exampleModalLongTitle">Removed Articles</h5>
       <button type="button" class="close" data-dismiss="modal" aria-label="Close">
         <span aria-hidden="true">&times;</span>
       </button>
@@ -45,8 +45,7 @@ const modal =
         <div id="removed-articles"></div>
     </div>
     <div class="modal-footer">
-      <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-      <button type="button" class="btn btn-primary">Save changes</button>
+      <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
     </div>
   </div>
 </div>
@@ -61,6 +60,27 @@ const bootstrapResources =
 let allSources = document.getElementsByClassName("C(#959595) Fz(11px) D(ib) Mb(6px)");
 let allCategories = document.getElementsByClassName("Fz(12px) Fw(b) Tt(c) D(ib) Mb(6px)");
 
+function createModalAndButton() {
+  if (!isModalButtonAdded) {
+      let yahooTopBar = document.getElementById("uh-right");
+      var modalButton = document.createElement("Button");
+      var modalButtonText = document.createTextNode("Display Removed Articles");
+      modalButton.setAttribute("data-toggle", "modal");
+      modalButton.classList.add("btn", "btn-success");
+      modalButton.setAttribute("data-target", "#exampleModalLong");
+      modalButton.setAttribute("type", "button");
+      modalButton.setAttribute("style", "font-size:5px");
+      modalButton.setAttribute("style", "width:200px");
+      modalButton.appendChild(modalButtonText);
+      yahooTopBar.insertBefore(modalButton, yahooTopBar.children[0]);
+      document.getElementsByTagName("BODY")[0].innerHTML = modal + document.getElementsByTagName("BODY")[0].innerHTML;
+      document.getElementsByTagName("HEAD")[0].innerHTML += bootstrapResources;
+      isModalButtonAdded = true;
+  }    
+}
+
+createModalAndButton();
+
 window.addEventListener('scroll', (event) => {
     allSources = document.getElementsByClassName("C(#959595) Fz(11px) D(ib) Mb(6px)");
     allCategories = document.getElementsByClassName("Fz(12px) Fw(b) Tt(c) D(ib) Mb(6px)");
@@ -72,7 +92,9 @@ window.addEventListener('scroll', (event) => {
                 removedSourcesCount++;
                 badSources.push("Source: " + allSources[allSourcesIndex].textContent + ", Title: " + allSources[allSourcesIndex].parentElement.children[2].textContent);
                 let removedArticlesModal = document.getElementById("removed-articles");
-                removedArticlesModal.innerHTML += "<p>" + (removedSourcesCount) + ": " + "Source: " + allSources[allSourcesIndex].textContent + ", Title: " + allSources[allSourcesIndex].parentElement.children[2].textContent + "</p>";
+                //random text color
+                var randomColor = Math.floor(Math.random()*16777215).toString(16);
+                removedArticlesModal.innerHTML += "<p style=color:#" + randomColor + ";>" + (removedSourcesCount) + ". " + "<b>Source:</b> " + "<em>" + allSources[allSourcesIndex].textContent + "</em>" + ", <b>Title:</b> " + "<em>" + allSources[allSourcesIndex].parentElement.children[2].textContent + "</em>" + "</p>";
                 allSources[allSourcesIndex].parentElement.parentElement.parentElement.parentElement.remove();
             }
         }
@@ -86,30 +108,13 @@ window.addEventListener('scroll', (event) => {
                 removedCategoriesCount++;
                 badCategories.push("Category: " + allCategories[allCategoriesIndex].textContent + ", Title: " + allCategories[allCategoriesIndex].parentElement.children[2].textContent);
                 let removedArticlesModal = document.getElementById("removed-articles");
-                removedArticlesModal.innerHTML += "<p>" + (removedCategoriesCount) + ": " + "Category: " + allCategories[allCategoriesIndex].textContent + ", Title: " + allCategories[allCategoriesIndex].parentElement.children[2].textContent + "</p>";
+                //random text color
+                var randomColor = Math.floor(Math.random()*16777215).toString(16);
+                removedArticlesModal.innerHTML += "<p style=color:#" + randomColor + ";>" + (removedCategoriesCount) + ". " + "<b>Category:</b> " + "<em>" + allCategories[allCategoriesIndex].textContent + "</em>" + ", <b>Title:</b> " + "<em>" + allCategories[allCategoriesIndex].parentElement.children[2].textContent + "</em>" + "</p>";
                 allCategories[allCategoriesIndex].parentElement.parentElement.parentElement.parentElement.remove();
             }
         }
     }
-
-    function createModalAndButton() {
-        if (!isModalButtonAdded) {
-            let yahooTopBar = document.getElementById("uh-right");
-            var modalButton = document.createElement("Button");
-            var modalButtonText = document.createTextNode("Display Removed Articles");
-            modalButton.setAttribute("data-toggle", "modal");
-            modalButton.classList.add("btn", "btn-primary");
-            modalButton.setAttribute("data-target", "#exampleModalLong");
-            modalButton.setAttribute("type", "button");
-            modalButton.appendChild(modalButtonText);
-            yahooTopBar.insertBefore(modalButton, yahooTopBar.children[0]);
-            document.getElementsByTagName("BODY")[0].innerHTML = modal + document.getElementsByTagName("BODY")[0].innerHTML;
-            document.getElementsByTagName("HEAD")[0].innerHTML += bootstrapResources;
-            isModalButtonAdded = true;
-        }    
-    }
-
-    createModalAndButton();
     removeArticleBySource(sourcesToRemove);
     removeArticleByCategory(categoriesToRemove);
 });
